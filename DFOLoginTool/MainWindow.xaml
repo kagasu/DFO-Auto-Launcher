@@ -1,0 +1,35 @@
+﻿<Window x:Class="DFOLoginTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         Title="MainWindow"
+        Width="350"
+        Height="250"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown" Initialized="Window_Initialized">
+
+    <Window.Resources>
+        <ResourceDictionary Source="placeHolder.xaml"/>
+    </Window.Resources>
+
+    <Border BorderBrush="#FF007ACC" Background="white"
+		BorderThickness="1" Margin="10,10,10,10">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="0" BlurRadius="15"  Color="#00007ACC" />
+        </Border.Effect>
+        <Grid>
+            <Button Content="×" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Click="ButtonExit_Click" BorderBrush="Transparent" Grid.Row="1" FontSize="16" Height="30" Width="30" Foreground="#FF0097FF" IsTabStop="False"/>
+            <Grid Margin="20,35,20,27">
+
+                <TextBox x:Name="textBox_ID" Height="29" Margin="116,0,0,0" TextWrapping="NoWrap" Width="162" BorderBrush="#FF0097FF" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <TextBlock Margin="0,1,0,0" TextWrapping="Wrap" Text="ID *" Foreground="#FF0097FF" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <PasswordBox x:Name="textBox_Password" Margin="116,35,0,0" Width="162" BorderBrush="#FF0097FF" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <TextBlock Margin="0,33,0,0" TextWrapping="Wrap" Text="Password *" RenderTransformOrigin="-2.073,-6.562" Foreground="#FF0097FF" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Button Content="Save" Margin="0,113,0,0" Width="278" Background="{x:Null}" BorderBrush="#FF0097FF" Foreground="#FF0097FF" Click="Button_Click" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top" Height="53"/>
+                <TextBox Style="{StaticResource placeHolder}" Tag="127.0.0.1:3128" x:Name="textBox_Proxy" Height="29" Margin="116,69,10,68" TextWrapping="NoWrap" Width="162" FontSize="20"/>
+
+                <TextBlock Margin="0,68,0,0" TextWrapping="Wrap" Text="Proxy"  Foreground="#FF0097FF" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
