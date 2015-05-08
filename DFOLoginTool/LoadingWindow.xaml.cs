@@ -47,20 +47,28 @@ namespace DFOLoginTool
 
                     data.Add("email", dataJson["id"]);
                     data.Add("password", dataJson["password"]);
+                    wc.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0");
 
                     var res = wc.UploadValues("https://member.dfoneople.com/launcher/restapi/login", data);
                     var json = DynamicJson.Parse((new UTF8Encoding()).GetString(res));
+                    
+                    wc.Headers.Add("Host", "member.dfoneople.com");
+                    wc.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0");
+                    wc.Headers.Add("Referer", @"https://member.dfoneople.com/launcher/login");
 
-                    var str = wc.DownloadString(string.Format("https://member.dfoneople.com/{0}", json["nextUrl"]));
-
+                    string str = wc.DownloadString(string.Format("https://member.dfoneople.com/{0}", json["nextUrl"]));
+                    Debug.WriteLine(str);
                     var reg = new Regex(@"src=""dfoglobal://([0-9a-zA-Z]{1,})/([0-9a-zA-Z]{1,})/([0-9a-zA-Z]{1,})""");
+                    var regFound = reg.Match(str).Groups;
+
+                    var launchArg = string.Format("9?52.0.226.21?7101?{0}?{1}?0?0?0?0?0?2?0?0?0?0?0?0?0", regFound[2].Value, regFound[3].Value);
 
                     var result = new Process()
                     {
                         StartInfo = new ProcessStartInfo()
                         {
                             FileName = string.Format(@"{0}DFO.exe", dfoDirectory),
-                            Arguments = string.Format("9?52.0.226.21?7101?{0}?{1}?0?0?0?0?0?2?0?0?0?0?0?0?0", ((Match)reg.Match(str)).Groups[2].Value, ((Match)reg.Match(str)).Groups[3].Value),
+                            Arguments = launchArg,
                             WorkingDirectory = dfoDirectory
                         }
                     }.Start();
