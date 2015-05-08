@@ -4,43 +4,70 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace DFOLoginTool
 {
-    class WebClientEx : WebClient
+    public class WebClientEx : WebClient
     {
-        private CookieContainer cookieContainer = new CookieContainer();
-
-
+        public WebClientEx(CookieContainer container)
+        {
+            this.container = container;
+        }
         public WebClientEx()
         {
-            this.Headers.Add("User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3)");
+
+        }
+        private readonly CookieContainer container = new CookieContainer();
+
+        protected override WebRequest GetWebRequest(Uri address)
+        {
+            WebRequest r = base.GetWebRequest(address);
+            var request = r as HttpWebRequest;
+            if (request != null)
+            {
+                request.CookieContainer = container;
+            }
+            return r;
         }
 
-        public CookieContainer CookieContainer
+        protected override WebResponse GetWebResponse(WebRequest request, IAsyncResult result)
         {
-            get
-            {
-                return this.cookieContainer;
-            }
-            set
-            {
-                this.cookieContainer = value;
-            }
+            WebResponse response = base.GetWebResponse(request, result);
+            ReadCookies(response);
+            return response;
         }
 
-        protected override WebRequest GetWebRequest(Uri uri)
+        protected override WebResponse GetWebResponse(WebRequest request)
         {
-            WebRequest webRequest = base.GetWebRequest(uri);
-            webRequest.Timeout = 5000;
+            WebResponse response = base.GetWebResponse(request);
+            ReadCookies(response);
+            return response;
+        }
 
-            if (webRequest is HttpWebRequest)
+        private void ReadCookies(WebResponse r)
+        {
+            var response = r as HttpWebResponse;
+            if (response != null)
             {
-                var httpWebRequest = (HttpWebRequest)webRequest;
-                httpWebRequest.CookieContainer = this.cookieContainer;
-            }
+                CookieCollection cookies = new CookieCollection();// = response.Cookies;
 
-            return webRequest;
+                // Hilariously, Neople's ASP.NET webapp does not provide Set-Cookie in a format C# can autoparse, so response.cookies is empty. ugh microsoft
+                for (int i = 0; i < response.Headers.Count; i++)
+                {
+                    string name = response.Headers.GetKey(i);
+                    string value = response.Headers.Get(i);
+                    if (name == "Set-Cookie")
+                    {
+                        Match match = Regex.Match(value, "(.+?)=(.+?);");
+                        if (match.Captures.Count > 0)
+                        {
+                            cookies.Add(new Cookie(match.Groups[1].Value, match.Groups[2].Value, "/", "dfoneople.com"));
+                        }
+                    }
+                }
+                container.Add(cookies);
+            }
         }
     }
 }
