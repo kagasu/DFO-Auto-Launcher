@@ -57,12 +57,11 @@ namespace DFOLoginTool
                     wc.Headers.Add("Referer", @"https://member.dfoneople.com/launcher/login");
 
                     string str = wc.DownloadString(string.Format("https://member.dfoneople.com/{0}", json["nextUrl"]));
-                    Debug.WriteLine(str);
-                    var reg = new Regex(@"src=""dfoglobal://([0-9a-zA-Z]{1,})/([0-9a-zA-Z]{1,})/([0-9a-zA-Z]{1,})""");
+                    var reg = new Regex("dfoglobal://([0-9a-zA-Z]{1,})/([0-9a-zA-Z]{1,})/([0-9a-zA-Z]{1,})/");
                     var regFound = reg.Match(str).Groups;
 
-                    var launchArg = string.Format("9?52.0.226.21?7101?{0}?{1}?0?0?0?0?0?2?0?0?0?0?0?0?0", regFound[2].Value, regFound[3].Value);
-
+                    var launchArg = string.Format("9?52.0.226.21?7101?{0}?{1}?0?0?0?0?0?2?0?0?0?0?0?0?0?0?0?0", regFound[2].Value, regFound[3].Value);
+                    
                     var result = new Process()
                     {
                         StartInfo = new ProcessStartInfo()
